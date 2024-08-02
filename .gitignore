@@ -27,4 +27,4 @@ go.work.sum
 
 # Build Folder
 
-./bin/*
+bin/*
