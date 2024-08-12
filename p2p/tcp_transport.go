@@ -33,7 +33,6 @@ type TCPTransport struct {
 func NewTCPTransport(listenAddress string) *TCPTransport {
 	return &TCPTransport{
 		listenAddress: listenAddress,
-		// peers:         make(map[net.Addr]Peer),
 	}
 }
 
@@ -63,5 +62,6 @@ func (t *TCPTransport) startAcceptLoop() {
 }
 
 func (t *TCPTransport) handleConn(conn net.Conn) {
-	fmt.Printf("new incoming connection%+v\n", conn)
+	peer := NewTCPPeer(conn, true)
+	fmt.Printf("new incoming connection%+v\n", peer)
 }
