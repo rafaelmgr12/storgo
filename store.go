@@ -1,10 +1,31 @@
 package main
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"io"
 	"log"
 	"os"
+	"strings"
 )
+
+func CASPathTansformFunc(key string) string {
+
+	hash := sha1.Sum([]byte(key))
+	hashStr := hex.EncodeToString(hash[:])
+
+	blocksize := 5
+	sliceLen := len(hashStr) / blocksize
+
+	paths := make([]string, sliceLen)
+
+	for i := 0; i < sliceLen; i++ {
+		from, to := i*blocksize, (i*blocksize)+blocksize
+		paths[i] = hashStr[from:to]
+	}
+
+	return strings.Join(paths, "/")
+}
 
 type PathTransformFunc func(string) string
 
