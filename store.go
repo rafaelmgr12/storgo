@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"crypto/md5"
 	"crypto/sha1"
 	"encoding/hex"
 	"io"
@@ -50,15 +52,16 @@ func NewStore(opts StoreOpts) *Store {
 }
 
 func (s *Store) writeStream(key string, r io.Reader) error {
-	pathName := s.PathTransformFunc(key) //transformation of the key
-	// give the right privilige
+	pathName := s.PathTransformFunc(key)
 	if err := os.MkdirAll(pathName, os.ModePerm); err != nil {
 		return err
 	}
 
-	// TODO: Implement a hash
-	filename := "somefilename"
+	buf := new(bytes.Buffer)
+	io.Copy(buf, r)
 
+	filenameBytes := md5.Sum(buf.Bytes())
+	filename := hex.EncodeToString(filenameBytes[:])
 	pathAndFilename := pathName + "/" + filename
 
 	f, err := os.Create(pathAndFilename)
@@ -66,7 +69,7 @@ func (s *Store) writeStream(key string, r io.Reader) error {
 		return err
 	}
 
-	n, err := io.Copy(f, r)
+	n, err := io.Copy(f, buf)
 
 	if err != nil {
 		return err
