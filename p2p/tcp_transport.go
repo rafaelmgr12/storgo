@@ -79,10 +79,6 @@ func (t *TCPTransport) startAcceptLoop() {
 
 }
 
-// Placeholder
-type Temp struct {
-}
-
 func (t *TCPTransport) handleConn(conn net.Conn) {
 
 	var err error
