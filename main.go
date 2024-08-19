@@ -7,8 +7,9 @@ import (
 	"github.com/rafaelmgr12/storgo/p2p"
 )
 
-func OnPeer(p2p.Peer) error {
-	fmt.Println("doing some logic with the peer outside the TCPTransport")
+func OnPeer(peer p2p.Peer) error {
+	// fmt.Println("doing some logic with the peer outside the TCPTransport")
+	peer.Close()
 	return nil
 }
 

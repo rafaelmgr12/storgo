@@ -108,10 +108,10 @@ func (t *TCPTransport) handleConn(conn net.Conn) {
 	rpc := RPC{}
 	for {
 
-		if err := t.Decoder.Decode(conn, &rpc); err != nil {
-			fmt.Printf("TCP error: %s\n", err)
-			continue
-
+		err := t.Decoder.Decode(conn, &rpc)
+		// TODO: Implement a better error handling for closing peer connections
+		if err != nil {
+			return
 		}
 
 		rpc.From = conn.RemoteAddr()
