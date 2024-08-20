@@ -66,9 +66,9 @@ func (s *Store) writeStream(key string, r io.Reader) error {
 		return err
 	}
 
-	pathAndFilename := pathKey.FullPath()
+	fullPath := pathKey.FullPath()
 
-	f, err := os.Create(pathAndFilename)
+	f, err := os.Create(fullPath)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (s *Store) writeStream(key string, r io.Reader) error {
 		return err
 	}
 
-	log.Printf("written (%d) bytes to disk: %s", n, pathAndFilename)
+	log.Printf("written (%d) bytes to disk: %s", n, fullPath)
 
 	return nil
 }
