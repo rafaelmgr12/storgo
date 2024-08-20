@@ -27,7 +27,7 @@ func CASPathTansformFunc(key string) PathKey {
 
 	return PathKey{
 		PathName: strings.Join(paths, "/"),
-		Original: hashStr,
+		Filename: hashStr,
 	}
 }
 
@@ -39,11 +39,11 @@ type StoreOpts struct {
 
 type PathKey struct {
 	PathName string
-	Original string
+	Filename string
 }
 
-func (p PathKey) Filename() string {
-	return fmt.Sprintf("%s/%s", p.PathName, p.Original)
+func (p PathKey) FullPath() string {
+	return fmt.Sprintf("%s/%s", p.PathName, p.Filename)
 }
 
 var DefaultPathTansformFunc = func(key string) string {
@@ -66,7 +66,7 @@ func (s *Store) writeStream(key string, r io.Reader) error {
 		return err
 	}
 
-	pathAndFilename := pathKey.Filename()
+	pathAndFilename := pathKey.FullPath()
 
 	f, err := os.Create(pathAndFilename)
 	if err != nil {
