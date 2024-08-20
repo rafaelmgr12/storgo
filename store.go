@@ -90,7 +90,9 @@ func (s *Store) Has(key string) bool {
 
 	pathKey := s.PathTransformFunc(key)
 
-	_, err := os.Stat(pathKey.FullPath())
+	fullPathWithRoot := fmt.Sprintf("%s/%s", s.Root, pathKey.FullPath())
+
+	_, err := os.Stat(fullPathWithRoot)
 	return !os.IsNotExist(err)
 
 }
