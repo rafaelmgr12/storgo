@@ -47,8 +47,11 @@ func (p PathKey) FullPath() string {
 	return fmt.Sprintf("%s/%s", p.PathName, p.Filename)
 }
 
-var DefaultPathTansformFunc = func(key string) string {
-	return key
+var DefaultPathTansformFunc = func(key string) PathKey {
+	return PathKey{
+		PathName: key,
+		Filename: key,
+	}
 }
 
 type Store struct {
@@ -56,6 +59,10 @@ type Store struct {
 }
 
 func NewStore(opts StoreOpts) *Store {
+	if opts.PathTransformFunc == nil {
+		opts.PathTransformFunc = DefaultPathTansformFunc
+	}
+
 	return &Store{
 		StoreOpts: opts,
 	}
