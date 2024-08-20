@@ -6,6 +6,20 @@ import (
 	"testing"
 )
 
+func newStore() *Store {
+	opts := StoreOpts{
+		PathTransformFunc: CASPathTansformFunc,
+	}
+
+	return NewStore(opts)
+}
+
+func teardown(t *testing.T, s *Store) {
+	if err := s.Clear(); err != nil {
+		t.Error(err)
+	}
+}
+
 func TestPathTransformFunc(t *testing.T) {
 	key := "momsbestpicture"
 	pathname := CASPathTansformFunc(key)
@@ -24,10 +38,8 @@ func TestPathTransformFunc(t *testing.T) {
 }
 
 func TestStoreDeleteKey(t *testing.T) {
-	opts := StoreOpts{
-		PathTransformFunc: CASPathTansformFunc,
-	}
-	s := NewStore(opts)
+	s := newStore()
+	defer teardown(t, s)
 	key := "momsspecials"
 	data := []byte("some jpg bytes")
 	if err := s.writeStream(key, bytes.NewReader(data)); err != nil {
@@ -43,10 +55,8 @@ func TestStoreDeleteKey(t *testing.T) {
 }
 
 func TestStore(t *testing.T) {
-	opts := StoreOpts{
-		PathTransformFunc: CASPathTansformFunc,
-	}
-	s := NewStore(opts)
+	s := newStore()
+	defer teardown(t, s)
 	key := "momsspecials"
 	data := []byte("some jpg bytes")
 	if err := s.writeStream(key, bytes.NewReader(data)); err != nil {
