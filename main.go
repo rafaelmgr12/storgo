@@ -1,42 +1,33 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/rafaelmgr12/storgo/p2p"
 )
 
-func OnPeer(peer p2p.Peer) error {
-	// fmt.Println("doing some logic with the peer outside the TCPTransport")
-	peer.Close()
-	return nil
-}
-
 func main() {
-
-	tcpOpts := p2p.TCPTransportOpts{
+	tcpTransportOpts := p2p.TCPTransportOpts{
 		ListenAddr:    ":3000",
 		HandshakeFunc: p2p.NOPHandshakeFunc,
 		Decoder:       p2p.DefaultDecoder{},
-		OnPeer:        OnPeer,
+		// TODO: onPeer func
+	}
+	tcpTransport := p2p.NewTCPTransport(tcpTransportOpts)
+
+	fileServerOpts := FileServerOpts{
+		ListenAddr:        ":3000",
+		StorageRoot:       "3000_network",
+		PathTransformFunc: CASPathTansformFunc,
+		Transport:         tcpTransport,
 	}
 
-	tr := p2p.NewTCPTransport(tcpOpts)
+	fs := NewFileServer(fileServerOpts)
 
-	go func() {
-		for {
-			msg := <-tr.Consume()
-			fmt.Printf("%+v\n", msg)
-		}
-	}()
-
-	if err := tr.ListenAndAccept(); err != nil {
+	if err := fs.Start(); err != nil {
 		log.Fatal(err)
 	}
 
 	select {}
-
-	// fmt.Println("Hello, World")
 
 }
