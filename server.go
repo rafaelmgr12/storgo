@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/rafaelmgr12/storgo/p2p"
 )
@@ -16,6 +17,10 @@ type FileServerOpts struct {
 
 type FileServer struct {
 	FileServerOpts
+
+	peerLock sync.Mutex
+	peers    map[string]p2p.Peer
+
 	store  *Store
 	quitch chan struct{}
 }
@@ -31,12 +36,24 @@ func NewFileServer(opts FileServerOpts) *FileServer {
 		FileServerOpts: opts,
 		store:          NewStore(storeOpts),
 		quitch:         make(chan struct{}),
+		peers:          make(map[string]p2p.Peer),
 	}
 
 }
 
 func (s *FileServer) Stop() {
 	close(s.quitch)
+}
+
+func (s *FileServer) OnPeer(p p2p.Peer) error {
+	s.peerLock.Lock()
+	defer s.peerLock.Unlock()
+
+	s.peers[p.RemoteAddr().String()] = p
+
+	log.Printf("connected with remote %s", p.RemoteAddr())
+
+	return nil
 }
 
 func (s *FileServer) loop() {
