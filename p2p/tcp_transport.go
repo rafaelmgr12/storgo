@@ -28,6 +28,21 @@ func (p *TCPPeer) Close() error {
 	return p.conn.Close()
 }
 
+// Send implements the peer interface, which will send the data
+// to the remote peer.
+func (p *TCPPeer) Send(data []byte) error {
+
+	_, err := p.conn.Write(data)
+	return err
+}
+
+// RemoteAddr implements the peer interface will return the
+// remote address of the underlying connection.
+func (p *TCPPeer) RemoteAddr() net.Addr {
+
+	return p.conn.RemoteAddr()
+}
+
 type TCPTransportOpts struct {
 	ListenAddr    string
 	HandshakeFunc HandshakeFunc
@@ -93,8 +108,6 @@ func (t *TCPTransport) startAcceptLoop() {
 		if err != nil {
 			fmt.Printf("TCP accept error: %s\n", err)
 		}
-
-		fmt.Printf("new incoming connect %+v\n", conn)
 
 		go t.handleConn(conn, false)
 	}
