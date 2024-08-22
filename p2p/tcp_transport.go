@@ -69,20 +69,21 @@ func (t *TCPTransport) ListenAndAccept() error {
 
 	go t.startAcceptLoop()
 
-	log.Printf("TCO transport listening on  port: %s\n", t.ListenAddr)
+	log.Printf("TCP transport listening on  port: %s\n", t.ListenAddr)
 
 	return nil
 }
 
 // Dial implements the Transport interface.
 func (t *TCPTransport) Dial(addr string) error {
-	conn, err := net.Dial("TCP", addr)
+	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		return err
 	}
 	go t.handleConn(conn, true)
 	return nil
 }
+
 func (t *TCPTransport) startAcceptLoop() {
 	for {
 		conn, err := t.listener.Accept()
