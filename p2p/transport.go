@@ -10,6 +10,7 @@ type Peer interface {
 // form (TCP,UDP websockets, ....)
 type Transport interface {
 	ListenAndAccept() error
+	Dial(string) error
 	Consume() <-chan RPC
 	Close() error
 }
