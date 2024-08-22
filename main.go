@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/rafaelmgr12/storgo/p2p"
 )
@@ -23,11 +24,13 @@ func main() {
 	}
 
 	fs := NewFileServer(fileServerOpts)
+	go func() {
+		time.Sleep(time.Second * 3)
+		fs.Stop()
+	}()
 
 	if err := fs.Start(); err != nil {
 		log.Fatal(err)
 	}
-
-	select {}
 
 }
