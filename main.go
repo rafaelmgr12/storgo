@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"log"
+	"time"
 
 	"github.com/rafaelmgr12/storgo/p2p"
 )
@@ -36,5 +38,9 @@ func main() {
 		log.Fatal(s1.Start())
 	}()
 
-	s2.Start()
+	go s2.Start()
+	time.Sleep(2 * time.Second)
+
+	data := bytes.NewReader([]byte("my big data file here!"))
+	s2.StoreData("myprivateData", data)
 }
