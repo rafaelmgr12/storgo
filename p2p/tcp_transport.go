@@ -9,8 +9,9 @@ import (
 
 // TCPPeer represents the remote node over a TCP established connection
 type TCPPeer struct {
-	// conn is the underlying connection of the peer
-	conn net.Conn
+	// The underlying connection of the peer. Which in this case
+	// is a TCP connection
+	net.Conn
 	// outbound is true if we dial and retrieve a connection
 	// outbound is false if we accept and retrieve a connection
 	outbound bool
@@ -18,29 +19,17 @@ type TCPPeer struct {
 
 func NewTCPPeer(conn net.Conn, outbound bool) *TCPPeer {
 	return &TCPPeer{
-		conn:     conn,
+		Conn:     conn,
 		outbound: outbound,
 	}
-}
-
-// Close implements the peer interface.
-func (p *TCPPeer) Close() error {
-	return p.conn.Close()
 }
 
 // Send implements the peer interface, which will send the data
 // to the remote peer.
 func (p *TCPPeer) Send(data []byte) error {
 
-	_, err := p.conn.Write(data)
+	_, err := p.Conn.Write(data)
 	return err
-}
-
-// RemoteAddr implements the peer interface will return the
-// remote address of the underlying connection.
-func (p *TCPPeer) RemoteAddr() net.Addr {
-
-	return p.conn.RemoteAddr()
 }
 
 type TCPTransportOpts struct {
