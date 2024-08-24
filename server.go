@@ -48,12 +48,16 @@ func (s *FileServer) Stop() {
 	close(s.quitch)
 }
 
-type Payload struct {
+type Message struct {
+	From    string
+	Payload any
+}
+type DataMessage struct {
 	Key  string
 	Data []byte
 }
 
-func (s *FileServer) broadcast(p *Payload) error {
+func (s *FileServer) broadcast(msg *Message) error {
 	peers := []io.Writer{}
 	for _, peer := range s.peers {
 		peers = append(peers, peer)
@@ -61,31 +65,32 @@ func (s *FileServer) broadcast(p *Payload) error {
 
 	mw := io.MultiWriter(peers...)
 
-	return gob.NewEncoder(mw).Encode(p)
+	return gob.NewEncoder(mw).Encode(msg)
 }
 
 func (s *FileServer) StoreData(key string, r io.Reader) error {
 	// 1. Store this file to disk
 	// 2. broadcast this file to all know peers in the network
 
-	if err := s.store.Write(key, r); err != nil {
-		return err
-	}
-
 	buf := new(bytes.Buffer)
-	_, err := io.Copy(buf, r)
-	if err != nil {
+
+	tee := io.TeeReader(r, buf)
+
+	if err := s.store.Write(key, tee); err != nil {
 		return err
 	}
 
-	p := &Payload{
+	p := &DataMessage{
 		Key:  key,
 		Data: buf.Bytes(),
 	}
 
 	fmt.Println(buf.Bytes())
 
-	return s.broadcast(p)
+	return s.broadcast(&Message{
+		From:    "TODO", // TODO: Implement a way to obtain the address of the sender
+		Payload: p,
+	})
 }
 
 func (s *FileServer) OnPeer(p p2p.Peer) error {
@@ -109,15 +114,30 @@ func (s *FileServer) loop() {
 	for {
 		select {
 		case msg := <-s.Transport.Consume():
-			var p Payload
-			if err := gob.NewDecoder(bytes.NewReader(msg.Payload)).Decode(&p); err != nil {
-				log.Fatal(err)
+			var m Message
+			if err := gob.NewDecoder(bytes.NewReader(msg.Payload)).Decode(&m); err != nil {
+				log.Println(err)
 			}
-			fmt.Printf("%+v\n", p)
+
+			if err := s.handleMessage(&m); err != nil {
+				log.Println(err)
+			}
+
 		case <-s.quitch:
 			return
 		}
 	}
+}
+
+func (s *FileServer) handleMessage(msg *Message) error {
+
+	switch v := msg.Payload.(type) {
+	case *DataMessage:
+		fmt.Printf("recevied data %+v\n", v)
+
+	}
+
+	return nil
 }
 
 func (s *FileServer) bootstrapNetwork() error {
