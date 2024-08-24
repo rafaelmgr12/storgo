@@ -141,12 +141,17 @@ func (s *Store) readStream(key string) (io.ReadCloser, error) {
 
 func (s *Store) writeStream(key string, r io.Reader) error {
 	pathKey := s.PathTransformFunc(key)
+
 	pathNameWithRoot := fmt.Sprintf("%s/%s", s.Root, pathKey.PathName)
+	// remove : from pathNameWithRoot
+	pathNameWithRoot = strings.Replace(pathNameWithRoot, ":", "", -1)
 	if err := os.MkdirAll(pathNameWithRoot, os.ModePerm); err != nil {
 		return err
 	}
 
 	fullPathWithRoot := fmt.Sprintf("%s/%s", s.Root, pathKey.FullPath())
+	// remove : from fullPathWithRoot
+	fullPathWithRoot = strings.Replace(fullPathWithRoot, ":", "", -1)
 
 	f, err := os.Create(fullPathWithRoot)
 	if err != nil {
