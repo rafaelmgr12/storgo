@@ -32,7 +32,8 @@ func TestStore(t *testing.T) {
 
 		data := []byte("some jpg bytes")
 
-		if err := s.writeStream(key, bytes.NewReader(data)); err != nil {
+		_, err := s.writeStream(key, bytes.NewReader(data))
+		if err != nil {
 			t.Error(err)
 		}
 
