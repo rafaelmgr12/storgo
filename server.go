@@ -85,7 +85,7 @@ func (s *FileServer) stream(msg *Message) error {
 	return gob.NewEncoder(mw).Encode(msg)
 }
 
-func (s *FileServer) StoreData(key string, r io.Reader) error {
+func (s *FileServer) Store(key string, r io.Reader) error {
 
 	var (
 		fileBuffer = new(bytes.Buffer)
