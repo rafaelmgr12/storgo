@@ -91,6 +91,8 @@ func (s *Store) Has(key string) bool {
 	pathKey := s.PathTransformFunc(key)
 
 	fullPathWithRoot := fmt.Sprintf("%s/%s", s.Root, pathKey.FullPath())
+	// remove : from fullPathWithRoot
+	fullPathWithRoot = strings.Replace(fullPathWithRoot, ":", "", -1)
 
 	_, err := os.Stat(fullPathWithRoot)
 	return !os.IsNotExist(err)
@@ -136,6 +138,8 @@ func (s *Store) readStream(key string) (io.ReadCloser, error) {
 
 	pathKey := s.PathTransformFunc(key)
 	fullPathWithRoot := fmt.Sprintf("%s/%s", s.Root, pathKey.FullPath())
+	// remove : from fullPathWithRoot
+	fullPathWithRoot = strings.Replace(fullPathWithRoot, ":", "", -1)
 	return os.Open(fullPathWithRoot)
 }
 
