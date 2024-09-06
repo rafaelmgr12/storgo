@@ -258,8 +258,7 @@ func (s *FileServer) handleMessageStoreFile(from string, msg MessageStoreFile) e
 
 	fmt.Printf("[%s] written %d bytes to disk\n", s.Transport.Addr(), n)
 
-	// TODO: change the type casting
-	peer.(*p2p.TCPPeer).Wg.Done()
+	peer.CloseStream()
 
 	return nil
 }

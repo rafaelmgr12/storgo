@@ -17,14 +17,14 @@ type TCPPeer struct {
 	// outbound is false if we accept and retrieve a connection
 	outbound bool
 
-	Wg *sync.WaitGroup
+	wg *sync.WaitGroup
 }
 
 func NewTCPPeer(conn net.Conn, outbound bool) *TCPPeer {
 	return &TCPPeer{
 		Conn:     conn,
 		outbound: outbound,
-		Wg:       &sync.WaitGroup{},
+		wg:       &sync.WaitGroup{},
 	}
 }
 
@@ -34,6 +34,12 @@ func (p *TCPPeer) Send(data []byte) error {
 
 	_, err := p.Conn.Write(data)
 	return err
+}
+
+// CloseStream implements the peer interface, which will close the
+// stream of the peer.
+func (p *TCPPeer) CloseStream() {
+	p.wg.Done()
 }
 
 type TCPTransportOpts struct {
@@ -150,9 +156,9 @@ func (t *TCPTransport) handleConn(conn net.Conn, outbound bool) {
 		rpc.From = conn.RemoteAddr().String()
 
 		if rpc.Stream {
-			peer.Wg.Add(1)
+			peer.wg.Add(1)
 			fmt.Printf("[%s] incoming stream, waiting...\n", conn.RemoteAddr())
-			peer.Wg.Wait()
+			peer.wg.Wait()
 			fmt.Printf("[%s] stream closed, resuming read lopp\n", conn.RemoteAddr())
 			continue
 		}

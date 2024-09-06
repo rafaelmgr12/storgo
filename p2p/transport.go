@@ -6,6 +6,7 @@ import "net"
 type Peer interface {
 	net.Conn
 	Send([]byte) error
+	CloseStream()
 }
 
 // Tansport is anything that handlers the communication
