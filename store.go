@@ -119,10 +119,12 @@ func (s *Store) Delete(key string) error {
 	return os.RemoveAll(firstPathNameWithRoot)
 }
 
-func (s *Store) Read(key string) (io.Reader, error) {
-	f, err := s.readStream(key)
+// FIXME: Instead of copying directly to a reader we first copy this into
+// a buffer. Maybe just return the File from the readStream ?
+func (s *Store) Read(key string) (int64, io.Reader, error) {
+	n, f, err := s.readStream(key)
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 
 	}
 
@@ -131,16 +133,27 @@ func (s *Store) Read(key string) (io.Reader, error) {
 	buf := new(bytes.Buffer)
 	_, err = io.Copy(buf, f)
 
-	return buf, err
+	return n, buf, err
 }
 
-func (s *Store) readStream(key string) (io.ReadCloser, error) {
+func (s *Store) readStream(key string) (int64, io.ReadCloser, error) {
 
 	pathKey := s.PathTransformFunc(key)
 	fullPathWithRoot := fmt.Sprintf("%s/%s", s.Root, pathKey.FullPath())
 	// remove : from fullPathWithRoot
 	fullPathWithRoot = strings.Replace(fullPathWithRoot, ":", "", -1)
-	return os.Open(fullPathWithRoot)
+
+	file, err := os.Open(fullPathWithRoot)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	fi, err := os.Stat(fullPathWithRoot)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return fi.Size(), file, nil
 }
 
 func (s *Store) writeStream(key string, r io.Reader) (int64, error) {
