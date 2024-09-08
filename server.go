@@ -158,7 +158,7 @@ func (s *FileServer) Store(key string, r io.Reader) error {
 
 	time.Sleep(time.Millisecond * 500)
 
-	//TODO use a multwriter here
+	//TODO: use a multwriter here
 	for _, peer := range s.peers {
 		peer.Send([]byte{p2p.IncomingStream})
 		n, err := io.Copy(peer, fileBuffer)
@@ -166,7 +166,7 @@ func (s *FileServer) Store(key string, r io.Reader) error {
 			return err
 		}
 
-		fmt.Println("recevied and written bytes to disk: ", n)
+		fmt.Println("received and written bytes to disk: ", n)
 
 	}
 
