@@ -115,6 +115,8 @@ func (s *Store) Delete(key string) error {
 
 	firstPathNameWithRoot := fmt.Sprintf("%s/%s", s.Root, pathKey.FirstPathName())
 
+	firstPathNameWithRoot = strings.Replace(firstPathNameWithRoot, ":", "", -1)
+
 	return os.RemoveAll(firstPathNameWithRoot)
 }
 
