@@ -45,32 +45,30 @@ func main() {
 
 	go s2.Start()
 
-	time.Sleep(2 * time.Second)
+	for i := 0; i < 20; i++ {
+		key := fmt.Sprintf("picture_%d.png", i)
 
-	key := "collPicture.jpg"
+		data := bytes.NewReader([]byte("my cool picture is here"))
+		s2.Store(key, data)
+		time.Sleep(500 * time.Millisecond)
 
-	data := bytes.NewReader([]byte("my cool picture is here"))
-	s2.Store(key, data)
-	time.Sleep(500 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 
-	time.Sleep(1 * time.Second)
+		if err := s2.store.Delete(key); err != nil {
+			log.Fatal(err)
+		}
 
-	if err := s2.store.Delete(key); err != nil {
-		log.Fatal(err)
+		r, err := s2.Get(key)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		b, err := ioutil.ReadAll(r)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(string(b))
 	}
-
-	time.Sleep(1 * time.Second)
-
-	r, err := s2.Get(key)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(string(b))
 
 }
