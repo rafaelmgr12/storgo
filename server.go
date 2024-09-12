@@ -77,17 +77,6 @@ type MessageStoreFile struct {
 	Size int64
 }
 
-func (s *FileServer) stream(msg *Message) error {
-	peers := []io.Writer{}
-	for _, peer := range s.peers {
-		peers = append(peers, peer)
-	}
-
-	mw := io.MultiWriter(peers...)
-
-	return gob.NewEncoder(mw).Encode(msg)
-}
-
 type MessageGetFile struct {
 	Key string
 }
