@@ -35,30 +35,36 @@ func makeServer(listenAddr string, nodes ...string) *FileServer {
 func main() {
 
 	s1 := makeServer(":3000", "")
-	s2 := makeServer(":4000", ":3000")
+	s2 := makeServer(":7000", "")
+	s3 := makeServer(":5000", ":3000", ":7000")
 
 	go func() {
 		log.Fatal(s1.Start())
-
 	}()
+
+	time.Sleep(500 * time.Millisecond)
+	go func() {
+		log.Fatal(s2.Start())
+	}()
+
 	time.Sleep(2 * time.Second)
 
-	go s2.Start()
+	go s3.Start()
 
 	for i := 0; i < 20; i++ {
 		key := fmt.Sprintf("picture_%d.png", i)
 
 		data := bytes.NewReader([]byte("my cool picture is here"))
-		s2.Store(key, data)
+		s3.Store(key, data)
 		time.Sleep(500 * time.Millisecond)
 
 		time.Sleep(1 * time.Second)
 
-		if err := s2.store.Delete(key); err != nil {
+		if err := s3.store.Delete(key); err != nil {
 			log.Fatal(err)
 		}
 
-		r, err := s2.Get(key)
+		r, err := s3.Get(key)
 		if err != nil {
 			log.Fatal(err)
 		}
