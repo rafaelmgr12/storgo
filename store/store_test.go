@@ -1,10 +1,12 @@
-package main
+package store
 
 import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
 	"testing"
+
+	"github.com/rafaelmgr12/storgo/cryptoutil"
 )
 
 func TestPathTransformFunc(t *testing.T) {
@@ -23,7 +25,7 @@ func TestPathTransformFunc(t *testing.T) {
 
 func TestStore(t *testing.T) {
 	s := newStore()
-	id := generateID()
+	id := cryptoutil.GenerateID()
 	defer teardown(t, s)
 
 	for i := 0; i < 50; i++ {

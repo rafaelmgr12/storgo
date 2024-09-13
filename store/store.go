@@ -1,4 +1,4 @@
-package main
+package store
 
 import (
 	"crypto/sha1"
@@ -9,6 +9,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/rafaelmgr12/storgo/cryptoutil"
 )
 
 const defaultRootFolderName = "storgonetwork"
@@ -114,7 +116,7 @@ func (s *Store) WriteDecrypt(encKey []byte, id string, key string, r io.Reader) 
 	if err != nil {
 		return 0, err
 	}
-	n, err := copyDecrypt(encKey, r, f)
+	n, err := cryptoutil.CopyDecrypt(encKey, r, f)
 	return int64(n), err
 }
 
