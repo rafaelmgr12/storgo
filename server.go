@@ -81,6 +81,8 @@ type MessageGetFile struct {
 	Key string
 }
 
+// TODO: Implement the Delete method
+
 func (s *FileServer) Get(key string) (io.Reader, error) {
 	if s.store.Has(s.ID, key) {
 		fmt.Printf("[%s] serving file (%s) from local disk\n", s.Transport.Addr(), key)
