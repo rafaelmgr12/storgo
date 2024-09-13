@@ -21,7 +21,7 @@ func makeServer(listenAddr string, nodes ...string) *FileServer {
 	fileServerOpts := FileServerOpts{
 		EncKey:            newEncryptionKey(),
 		StorageRoot:       listenAddr + "_network",
-		PathTransformFunc: CASPathTansformFunc,
+		PathTransformFunc: CASPathTransformFunc,
 		Transport:         tcpTransport,
 		BootstrapNodes:    nodes,
 	}
@@ -51,16 +51,12 @@ func main() {
 
 	go s3.Start()
 
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 3; i++ {
 		key := fmt.Sprintf("picture_%d.png", i)
-
-		data := bytes.NewReader([]byte("my cool picture is here"))
+		data := bytes.NewReader([]byte("my big data file here!"))
 		s3.Store(key, data)
-		time.Sleep(500 * time.Millisecond)
 
-		time.Sleep(1 * time.Second)
-
-		if err := s3.store.Delete(key); err != nil {
+		if err := s3.store.Delete(s3.ID, key); err != nil {
 			log.Fatal(err)
 		}
 
