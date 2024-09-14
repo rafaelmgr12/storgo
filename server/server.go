@@ -365,13 +365,3 @@ func init() {
 	gob.Register(MessageGetFile{})
 	gob.Register(MessageDeleteFile{})
 }
-
-func gobEncode(data interface{}) []byte {
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(data)
-	if err != nil {
-		log.Fatal("gobEncode failed:", err)
-	}
-	return buf.Bytes()
-}
