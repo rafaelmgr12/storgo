@@ -236,9 +236,7 @@ func (s *FileServer) loop() {
 		select {
 		case rpc := <-s.Transport.Consume():
 			var msg Message
-
-			log.Printf("Received payload of size: %d bytes from peer: %s", len(rpc.Payload), rpc.From)
-
+			//FIXME: Method delete not processing here in the message
 			if err := gob.NewDecoder(bytes.NewReader(rpc.Payload)).Decode(&msg); err != nil {
 				log.Println("decode error: ", err)
 				continue
@@ -246,7 +244,6 @@ func (s *FileServer) loop() {
 			if err := s.handleMessage(rpc.From, &msg); err != nil {
 				log.Println("handle message error: ", err)
 			}
-
 		case <-s.quitch:
 			return
 		}
@@ -368,4 +365,14 @@ func init() {
 	gob.Register(MessageStoreFile{})
 	gob.Register(MessageGetFile{})
 	gob.Register(MessageDeleteFile{})
+}
+
+func gobEncode(data interface{}) []byte {
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	err := enc.Encode(data)
+	if err != nil {
+		log.Fatal("gobEncode failed:", err)
+	}
+	return buf.Bytes()
 }
