@@ -236,7 +236,6 @@ func (s *FileServer) loop() {
 		select {
 		case rpc := <-s.Transport.Consume():
 			var msg Message
-			//FIXME: Method delete not processing here in the message
 			if err := gob.NewDecoder(bytes.NewReader(rpc.Payload)).Decode(&msg); err != nil {
 				log.Println("decode error: ", err)
 				continue
