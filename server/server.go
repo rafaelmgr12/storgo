@@ -201,7 +201,7 @@ func (s *FileServer) Store(key string, r io.Reader) error {
 	}
 	mw := io.MultiWriter(peers...)
 	mw.Write([]byte{p2p.IncomingStream})
-	n, err := cryptoutil.CopyDecrypt(s.EncKey, fileBuffer, mw)
+	n, err := cryptoutil.CopyEncrypt(s.EncKey, fileBuffer, mw)
 	if err != nil {
 		return err
 	}
