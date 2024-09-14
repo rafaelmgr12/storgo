@@ -5,7 +5,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/rafaelmgr12/storgo">
-    <img src="images/logo.png" alt="Logo">
+    <img src="docs/images/logo.png" alt="Logo">
   </a>
 
   <h3 align="center">Storgo</h3>
