@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/rafaelmgr12/storgo/cryptoutil"
+	"github.com/rafaelmgr12/storgo/internal/cryptoutil"
 )
 
 func TestPathTransformFunc(t *testing.T) {

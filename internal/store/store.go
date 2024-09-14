@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rafaelmgr12/storgo/cryptoutil"
+	"github.com/rafaelmgr12/storgo/internal/cryptoutil"
 )
 
 const defaultRootFolderName = "storgonetwork"
