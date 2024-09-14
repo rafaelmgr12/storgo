@@ -76,6 +76,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	select {}
+	time.Sleep(time.Second * 3)
 
 }
