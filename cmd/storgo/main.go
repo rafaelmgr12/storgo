@@ -7,10 +7,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/rafaelmgr12/storgo/cryptoutil"
-	"github.com/rafaelmgr12/storgo/p2p"
-	"github.com/rafaelmgr12/storgo/server"
-	"github.com/rafaelmgr12/storgo/store"
+	"github.com/rafaelmgr12/storgo/internal/cryptoutil"
+	"github.com/rafaelmgr12/storgo/internal/server"
+	"github.com/rafaelmgr12/storgo/internal/store"
+	"github.com/rafaelmgr12/storgo/pkg/p2p"
 )
 
 func makeServer(listenAddr string, nodes ...string) *server.FileServer {
