@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 
 build:
-	@go build -o bin/fs
+	@go build -o bin/storgo ./cmd/storgo
 
 run: build
 	@./bin/fs
