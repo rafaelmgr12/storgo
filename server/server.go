@@ -57,7 +57,6 @@ func (s *FileServer) broadcast(msg *Message) error {
 	if err := gob.NewEncoder(buf).Encode(msg); err != nil {
 		return err
 	}
-
 	for _, peer := range s.peers {
 		peer.Send([]byte{p2p.IncomingMessage})
 		if err := peer.Send(buf.Bytes()); err != nil {
@@ -83,7 +82,51 @@ type MessageGetFile struct {
 	Key string
 }
 
-// TODO: Implement the Delete method
+type MessageDeleteFile struct {
+	ID  string
+	Key string
+}
+
+func (s *FileServer) Delete(key string) error {
+	err := s.store.Delete(s.ID, key)
+	if err != nil {
+		fmt.Printf("[:%s] failed to delete file locally: %v\n", s.Transport.Addr(), err)
+	} else {
+		fmt.Printf("[:%s] deleted file (%s) locally\n", s.Transport.Addr(), key)
+	}
+
+	msg := Message{
+		Payload: MessageDeleteFile{
+			ID:  s.ID,
+			Key: cryptoutil.HashKey(key),
+		},
+	}
+
+	if err := s.broadcast(&msg); err != nil {
+		return err
+	}
+
+	time.Sleep(time.Millisecond * 5)
+
+	for _, peer := range s.peers {
+		fmt.Printf("[:%s] sending delete command to peer %s\n", s.Transport.Addr(), peer.RemoteAddr())
+
+		peer.Send([]byte{p2p.IncomingMessage})
+		buf := new(bytes.Buffer)
+		if err := gob.NewEncoder(buf).Encode(msg); err != nil {
+			return fmt.Errorf("failed to encode delete message: %v", err)
+		}
+
+		if err := peer.Send(buf.Bytes()); err != nil {
+			fmt.Printf("[:%s] failed to send delete message to peer: %v\n", s.Transport.Addr(), err)
+		}
+
+		time.Sleep(time.Millisecond * 2)
+
+	}
+
+	return nil
+}
 
 func (s *FileServer) Get(key string) (io.Reader, error) {
 	if s.store.Has(s.ID, key) {
@@ -193,8 +236,12 @@ func (s *FileServer) loop() {
 		select {
 		case rpc := <-s.Transport.Consume():
 			var msg Message
+
+			log.Printf("Received payload of size: %d bytes from peer: %s", len(rpc.Payload), rpc.From)
+
 			if err := gob.NewDecoder(bytes.NewReader(rpc.Payload)).Decode(&msg); err != nil {
-				log.Println("decoding error: ", err)
+				log.Println("decode error: ", err)
+				continue
 			}
 			if err := s.handleMessage(rpc.From, &msg); err != nil {
 				log.Println("handle message error: ", err)
@@ -212,7 +259,22 @@ func (s *FileServer) handleMessage(from string, msg *Message) error {
 		return s.handleMessageStoreFile(from, v)
 	case MessageGetFile:
 		return s.handleMessageGetFile(from, v)
+	case MessageDeleteFile:
+		return s.handleMessageDeleteFile(from, v)
 	}
+
+	return nil
+}
+
+func (s *FileServer) handleMessageDeleteFile(from string, msg MessageDeleteFile) error {
+	if s.store.Has(msg.ID, msg.Key) {
+		err := s.store.Delete(msg.ID, msg.Key)
+		if err != nil {
+			return fmt.Errorf("[:%s] error deleting file (%s): %v", s.Transport.Addr(), msg.Key, err)
+		}
+	}
+
+	fmt.Printf("[:%s] file (%s) deleted as requested by peer %s\n", s.Transport.Addr(), msg.Key, from)
 
 	return nil
 }
@@ -305,4 +367,5 @@ func (s *FileServer) Start() error {
 func init() {
 	gob.Register(MessageStoreFile{})
 	gob.Register(MessageGetFile{})
+	gob.Register(MessageDeleteFile{})
 }
