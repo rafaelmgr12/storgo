@@ -7,10 +7,13 @@ import (
 	"log"
 	"time"
 
+	"github.com/rafaelmgr12/storgo/cryptoutil"
 	"github.com/rafaelmgr12/storgo/p2p"
+	"github.com/rafaelmgr12/storgo/server"
+	"github.com/rafaelmgr12/storgo/store"
 )
 
-func makeServer(listenAddr string, nodes ...string) *FileServer {
+func makeServer(listenAddr string, nodes ...string) *server.FileServer {
 	tcpTransportOpts := p2p.TCPTransportOpts{
 		ListenAddr:    listenAddr,
 		HandshakeFunc: p2p.NOPHandshakeFunc,
@@ -18,15 +21,15 @@ func makeServer(listenAddr string, nodes ...string) *FileServer {
 	}
 	tcpTransport := p2p.NewTCPTransport(tcpTransportOpts)
 
-	fileServerOpts := FileServerOpts{
-		EncKey:            newEncryptionKey(),
+	fileServerOpts := server.FileServerOpts{
+		EncKey:            cryptoutil.NewEncryptionKey(),
 		StorageRoot:       listenAddr + "_network",
-		PathTransformFunc: CASPathTransformFunc,
+		PathTransformFunc: store.CASPathTransformFunc,
 		Transport:         tcpTransport,
 		BootstrapNodes:    nodes,
 	}
 
-	s := NewFileServer(fileServerOpts)
+	s := server.NewFileServer(fileServerOpts)
 
 	tcpTransport.OnPeer = s.OnPeer
 
@@ -51,26 +54,28 @@ func main() {
 
 	go s3.Start()
 
-	for i := 0; i < 3; i++ {
-		key := fmt.Sprintf("picture_%d.png", i)
-		data := bytes.NewReader([]byte("my big data file here!"))
-		s3.Store(key, data)
+	key := "picture.png"
+	data := bytes.NewReader([]byte("my big data file here!"))
+	s3.Store(key, data)
 
-		if err := s3.store.Delete(s3.ID, key); err != nil {
-			log.Fatal(err)
-		}
-
-		r, err := s3.Get(key)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		b, err := ioutil.ReadAll(r)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(string(b))
+	r, err := s3.Get(key)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(b))
+
+	time.Sleep(2 * time.Second)
+
+	if err := s3.Delete(key); err != nil {
+		log.Fatal(err)
+	}
+
+	select {}
 
 }
