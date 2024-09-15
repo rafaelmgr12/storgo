@@ -100,6 +100,35 @@ go run main.go
 <!-- ROADMAP -->
 ## Roadmap
 
+### 1. Configuration Management
+- [ ] **Implement dynamic configuration management**
+  - Use `viper` or `envconfig`.
+  - Load configurations from YAML, TOML, environment variables, or CLI flags.
+  - Support different configurations for dev, staging, and production environments.
+  - 
+### 2. API and Communication
+- [ ] **Add REST API or gRPC endpoints**
+  - Use `net/http` for REST or gRPC for binary protocol.
+  - Define API routes for external services to interact with the system.
+
+### 3. CLI Improvements
+- [ ] **Enhance the CLI interface**
+  - Extend CLI functionality using `cobra` to support more commands and flags.
+  - Add commands for configuration management, starting/stopping services, etc.
+
+### 4. Docker and Deployment
+- [ ] **Dockerize the application**
+  - Create a `Dockerfile` for building the application container.
+  - Set up Docker Compose for running services in development.
+  - Ensure compatibility with deployment environments.
+
+
+### 5. Service Discovery using Distributed Hash Table (DHT)
+- [ ] **Implement Service Discovery with DHT**
+  - Use a Distributed Hash Table (DHT) for peer-to-peer service discovery.
+  - Research and implement an existing DHT library (e.g., `Kademlia` or `libp2p`).
+  - Set up a mechanism where nodes in the system can discover and communicate with each other via the DHT without centralized coordination.
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
