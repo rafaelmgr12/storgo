@@ -5,7 +5,7 @@ build:
 	@go build -o bin/storgo ./cmd/storgo
 
 run: build
-	@./bin/fs
+	@./bin/storgo
 
 test:
 	@go test -v ./... 
