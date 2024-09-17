@@ -1,0 +1,6 @@
+app_name: "Storgo Network"
+ports:
+  server1: 3000
+  server2: 7000
+  server3: 5000
+

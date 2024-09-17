@@ -1,6 +1,5 @@
 SHELL := /bin/bash
 
-
 build:
 	@go build -o bin/storgo ./cmd/storgo
 

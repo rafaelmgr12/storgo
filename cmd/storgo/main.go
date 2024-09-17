@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/rafaelmgr12/storgo/config"
 	"github.com/rafaelmgr12/storgo/internal/cryptoutil"
 	"github.com/rafaelmgr12/storgo/internal/server"
 	"github.com/rafaelmgr12/storgo/internal/store"
@@ -35,11 +36,17 @@ func makeServer(listenAddr string, nodes ...string) *server.FileServer {
 
 	return s
 }
-func main() {
 
-	s1 := makeServer(":3000", "")
-	s2 := makeServer(":7000", "")
-	s3 := makeServer(":5000", ":3000", ":7000")
+func main() {
+	cfg := config.LoadConfig(".")
+
+	server1Port := fmt.Sprintf(":%d", cfg.Port.Server1)
+	server2Port := fmt.Sprintf(":%d", cfg.Port.Server2)
+	server3Port := fmt.Sprintf(":%d", cfg.Port.Server3)
+
+	s1 := makeServer(server1Port, "")
+	s2 := makeServer(server2Port, "")
+	s3 := makeServer(server3Port, server1Port, server2Port)
 
 	go func() {
 		log.Fatal(s1.Start())
@@ -77,5 +84,4 @@ func main() {
 	}
 
 	time.Sleep(time.Second * 3)
-
 }
