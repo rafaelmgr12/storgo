@@ -111,33 +111,27 @@ Storgo is a fully distributed, content-addressable, decentralized file storage s
 ## 14. P2P Network Enhancements
 
 - [ ] **Extend Handshake Protocol**
-
   - The `handshake.go` file seems to implement a basic handshake mechanism. Enhance it by adding more robust validation and authentication during peer connection establishment.
   - Add encryption support during handshake using SSL/TLS or similar to ensure secure peer connections.
   - Implement peer verification mechanisms to prevent malicious peers from joining the network.
 
 - [ ] **Improve Message Encoding**
-
   - The `encoding.go` file handles encoding for P2P communication. Consider adding support for more efficient binary serialization formats like **Protocol Buffers** or **Cap’n Proto** to improve performance.
   - Add versioning to the message format to ensure backward compatibility as the protocol evolves.
 
 - [ ] **Transport Layer Enhancements**
-
   - The `tcp_transport.go` and `transport.go` files handle P2P transport. Add support for multiple transport protocols (e.g., UDP, QUIC) to improve flexibility and performance, especially in high-latency networks.
   - Implement **reliable delivery** and **packet loss recovery** mechanisms for P2P communication to ensure file transfer integrity.
   - Consider adding **connection pooling** and reuse to optimize network performance, reducing the overhead of establishing new connections.
 
 - [ ] **Network Health Monitoring**
-
   - Implement network health monitoring features that can provide statistics on peer connection status, latency, and bandwidth usage.
   - Add diagnostic tools to the CLI that allow users to monitor P2P network activity (e.g., active peers, connection stability).
 
 - [ ] **Peer Reputation and Blacklisting**
-
   - Implement a peer reputation system that tracks the reliability of each peer in terms of availability, data accuracy, and response time.
   - Add mechanisms to **blacklist** or ban peers that exhibit malicious behavior, preventing them from connecting to the network.
 
 - [ ] **P2P Test Coverage**
-
   - Improve test coverage for the `tcp_transport.go` file, and ensure the testing suite is comprehensive for different network conditions (latency, packet loss, etc.).
   - Add **integration tests** to simulate real-world P2P scenarios, including network partitioning and peer failure recovery.
