@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+
+# Define when the workflow should be triggered
+on:
+  push:
+    branches:
+      - dev  # Runs on push to the 'dev' branch
+  pull_request:
+    branches:
+      - main  # Runs on pull request to the 'main' branch
+
+# Define what actions to perform when the workflow is triggered
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Go environment
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.22' # Specify the version of Go to use
+
+      # Install project dependencies
+      - name: Install Dependencies
+        run: |
+          go mod download
+
+      # Run tests
+      - name: Run Tests
+        run: |
+          go test ./...
+
+      # Build the project
+      - name: Build
+        run: |
+          go build -v ./...
